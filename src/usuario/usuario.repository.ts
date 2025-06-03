@@ -25,6 +25,33 @@ export class UsuarioRepository {
         id: string,
         body: Partial<UsuarioEntity>
     ) {
+        const usuario = this.buscaPorId(id)
+
+        Object.entries(body).forEach(([key, value]) => {
+            if (key === 'id_usuario') {
+                return;
+            };
+
+            usuario[key] = value;
+        });
+
+        return usuario;
+    }
+
+    async deleteUsuario(
+        id: string
+    ) {
+        const usuario = this.buscaPorId(id)
+
+        this.usuarios = this.usuarios.filter(
+            usuarioSalvo => usuarioSalvo.id_usuario !== id
+        );
+
+        return usuario;
+    }
+
+    //função privada para buscar um id salvo
+    private buscaPorId(id: string) {
         const possivelUsuario = this.usuarios.find(
             usuarioSalvo => usuarioSalvo.id_usuario === id
         );
@@ -32,14 +59,6 @@ export class UsuarioRepository {
         if (!possivelUsuario) {
             throw new Error('Usuário não existe');
         }
-
-        Object.entries(body).forEach(([key, value]) => {
-            if (key === 'id_usuario') {
-                return;
-            };
-
-            possivelUsuario[key] = value;
-        });
 
         return possivelUsuario;
     }

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { UsuarioRepository } from "./usuario.repository";
 import { CriaUsuarioDTO } from "./dto/CriaUsuario.dto"; //DTO onde faz com o documneto recebido pela rota seja de acordo com o enviado, fazendo as validações para aceitar
 import { UsuarioEntity } from "./usuario.entity";
@@ -47,11 +47,23 @@ export class UsuarioController {
     async atualizaUsuario(
         @Param('id') id: string,
         @Body() body: AtualizaUsuarioDTO) {
-            const usuarioAtualizado = await this.usuarioRepository.atualiza(id, body)
+        const usuarioAtualizado = await this.usuarioRepository.atualiza(id, body)
 
-            return {
-                usuario: usuarioAtualizado,
-                message: 'Usuário atualizado com sucesso!'
-            }
+        return {
+            usuario: usuarioAtualizado,
+            message: 'Usuário atualizado com sucesso!'
         }
+    }
+
+    @Delete('/:id')
+    async deleteUsuario(
+        @Param('id') id: string
+    ) {
+        const deleteUsuario = await this.usuarioRepository.deleteUsuario(id);
+
+        return {
+            usuario: deleteUsuario,
+            message: 'Usuário removido com sucesso!'
+        }
+    }
 }
