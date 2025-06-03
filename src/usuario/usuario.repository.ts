@@ -9,7 +9,7 @@ export class UsuarioRepository {
         this.usuarios.push(usuario);
     }
 
-    async listUsuarios(){
+    async listUsuarios() {
         return this.usuarios;
     }
 
@@ -19,5 +19,28 @@ export class UsuarioRepository {
         );
 
         return existUsuario !== undefined;
+    }
+
+    async atualiza(
+        id: string,
+        body: Partial<UsuarioEntity>
+    ) {
+        const possivelUsuario = this.usuarios.find(
+            usuarioSalvo => usuarioSalvo.id_usuario === id
+        );
+
+        if (!possivelUsuario) {
+            throw new Error('Usuário não existe');
+        }
+
+        Object.entries(body).forEach(([key, value]) => {
+            if (key === 'id_usuario') {
+                return;
+            };
+
+            possivelUsuario[key] = value;
+        });
+
+        return possivelUsuario;
     }
 }
