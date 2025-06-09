@@ -4,8 +4,11 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  DeleteDateColumn
+  DeleteDateColumn,
+  OneToMany
 } from "typeorm";
+import { ProdutoCaracteristicaEntity } from "./produto-caracteristica.entity";
+import { ProdutoImagemEntity } from "./produto-imagem.entity";
 
 /*class CaracteristicaProduto {
   nome: string;
@@ -40,6 +43,16 @@ export class ProdutoEntity {
   @Column({ name: 'categoria', length: 255, nullable: false })
   categoria: string;
 
+  //OneToMany ou OneToOne são relacionamentos entre tabelas, nesse caso como many é para muitos, ou seja um produto pode ter várias caracteristicas
+  //NA TABELA REFERENCIADA FAREMOS O INVERSO, NESSE CASO ESTAMOS PASSADO UM PODRUTO PODE TER MUITAS CARACTERISTICAS, MAS NA TABELA REFERENCIADO PASSAMOS O MUITOS PARA UM OIU MANYTOONE
+  @OneToMany(() => ProdutoCaracteristicaEntity,
+    (produtocaracteristicasEntity) => produtocaracteristicasEntity.produto)
+  caracteristicas: ProdutoCaracteristicaEntity[]
+
+  @OneToMany(() => ProdutoImagemEntity,
+    (produtoImagemEntity) => produtoImagemEntity.produto)
+  imagens: ProdutoImagemEntity[]
+
   @CreateDateColumn({ name: 'created_at' }) //Anotação para gerar registro de hora na monipulação dos dados dentro da tabela, seguindo o padrão do nome da anotação
   createAt: string;
 
@@ -49,7 +62,4 @@ export class ProdutoEntity {
   @DeleteDateColumn({ name: 'delete_at' }) //Anotação para gerar registro de hora na monipulação dos dados dentro da tabela, seguindo o padrão do nome da anotação
   deletedAt: string;
 
-  /*
-  caracteristicas: CaracteristicaProduto[];
-  imagens: ImagemProduto[];*/
 }
