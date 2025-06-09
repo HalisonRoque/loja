@@ -46,11 +46,13 @@ export class ProdutoEntity {
   //OneToMany ou OneToOne são relacionamentos entre tabelas, nesse caso como many é para muitos, ou seja um produto pode ter várias caracteristicas
   //NA TABELA REFERENCIADA FAREMOS O INVERSO, NESSE CASO ESTAMOS PASSADO UM PODRUTO PODE TER MUITAS CARACTERISTICAS, MAS NA TABELA REFERENCIADO PASSAMOS O MUITOS PARA UM OIU MANYTOONE
   @OneToMany(() => ProdutoCaracteristicaEntity,
-    (produtocaracteristicasEntity) => produtocaracteristicasEntity.produto)
+    (produtocaracteristicasEntity) => produtocaracteristicasEntity.produto,
+    { cascade: true, eager: true })
   caracteristicas: ProdutoCaracteristicaEntity[]
 
   @OneToMany(() => ProdutoImagemEntity,
-    (produtoImagemEntity) => produtoImagemEntity.produto)
+    (produtoImagemEntity) => produtoImagemEntity.produto,
+    { cascade: true, eager: true }) //o cascade serve para criar em cascata nas tabelas ralacioandas, o cascade apaga ou cria os relacionaamentos
   imagens: ProdutoImagemEntity[]
 
   @CreateDateColumn({ name: 'created_at' }) //Anotação para gerar registro de hora na monipulação dos dados dentro da tabela, seguindo o padrão do nome da anotação

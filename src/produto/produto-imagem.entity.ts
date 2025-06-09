@@ -19,6 +19,7 @@ export class ProdutoImagemEntity {
 
     //Relaciomento inverso para a tabela produto
     @ManyToOne(() => ProdutoEntity,
-        (produto => produto.imagens))
+        (produto => produto.imagens),
+        { orphanedRowAction: 'delete', onDelete: 'CASCADE', onUpdate: 'CASCADE' })
     produto: ProdutoEntity;
 }
