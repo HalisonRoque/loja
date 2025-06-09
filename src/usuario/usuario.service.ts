@@ -22,20 +22,28 @@ export class UsuarioService {
                 usuario.nome
             )
         );
-
         return usuarioLista;
     }
 
+    //create
     async createUsuario(
-        usuarioEntity: UsuarioEntity
+        body: CriaUsuarioDTO
     ) {
+        const usuarioEntity = new UsuarioEntity();
+
+        usuarioEntity.email = body.email;
+        usuarioEntity.senha = body.senha;
+        usuarioEntity.nome = body.nome;
+
         await this.usuarioRepository.save(usuarioEntity);
     }
 
+    //update
     async updateUsuario(id: string, usuarioEntity: AtualizaUsuarioDTO) {
         await this.usuarioRepository.update(id, usuarioEntity);
     }
 
+    //delete
     async deleteUsuario(id: string) {
         await this.usuarioRepository.delete(id);
     }

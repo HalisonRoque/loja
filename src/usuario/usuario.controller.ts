@@ -17,21 +17,7 @@ export class UsuarioController {
 
     @Post()
     async criaUsuario(@Body() body: CriaUsuarioDTO) {
-        const usuarioEntity = new UsuarioEntity();
-        usuarioEntity.email = body.email;
-        usuarioEntity.senha = body.senha;
-        usuarioEntity.nome = body.nome;
-        usuarioEntity.id_usuario = uuid();
-
-        this.usuarioService.createUsuario(usuarioEntity);
-
-        return {
-            usuario: new ListaUsuarioDTO(
-                usuarioEntity.id_usuario,
-                usuarioEntity.nome
-            ),
-            message: 'Usuário criado com sucesso'
-        }
+        return await this.usuarioService.createUsuario(body);
     }
 
     @Get()
