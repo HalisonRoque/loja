@@ -23,7 +23,7 @@ export class UsuarioController {
         usuarioEntity.nome = body.nome;
         usuarioEntity.id_usuario = uuid();
 
-        this.usuarioRepository.salvar(usuarioEntity);
+        this.usuarioService.createUsuario(usuarioEntity);
 
         return {
             usuario: new ListaUsuarioDTO(
@@ -44,7 +44,7 @@ export class UsuarioController {
     async atualizaUsuario(
         @Param('id') id: string,
         @Body() body: AtualizaUsuarioDTO) {
-        const usuarioAtualizado = await this.usuarioRepository.atualiza(id, body)
+        const usuarioAtualizado = await this.usuarioService.updateUsuario(id, body)
 
         return {
             usuario: usuarioAtualizado,
@@ -56,7 +56,7 @@ export class UsuarioController {
     async deleteUsuario(
         @Param('id') id: string
     ) {
-        const deleteUsuario = await this.usuarioRepository.deleteUsuario(id);
+        const deleteUsuario = await this.usuarioService.deleteUsuario(id);
 
         return {
             usuario: deleteUsuario,

@@ -10,7 +10,7 @@ import { Repository } from "typeorm";
 export class UsuarioService {
     constructor(
         @InjectRepository(UsuarioEntity)
-        private readonly usuarioRepository: Repository<UsuarioEntity> //no contrutor injetamos os repositorio apontando para a entidade, o readonly habilita apenas leitura
+        private readonly usuarioRepository: Repository<UsuarioEntity> //no construtor injetamos os repositorio apontando para a entidade, o readonly habilita apenas leitura
     ) { }
 
     //LISTAR USUÁRIOS
@@ -24,5 +24,19 @@ export class UsuarioService {
         );
 
         return usuarioLista;
+    }
+
+    async createUsuario(
+        usuarioEntity: UsuarioEntity
+    ) {
+        await this.usuarioRepository.save(usuarioEntity);
+    }
+
+    async updateUsuario(id: string, usuarioEntity: AtualizaUsuarioDTO) {
+        await this.usuarioRepository.update(id, usuarioEntity);
+    }
+
+    async deleteUsuario(id: string) {
+        await this.usuarioRepository.delete(id);
     }
 }

@@ -16,6 +16,6 @@ export class ListaProdutoDTO {
   quantidade: number;
   descricao: string;
   categoria: string;
-  caracteristicas: ListaCaracteristicaProdutoDTO[];
-  imagens: ListaImagemProdutoDTO[];
+  //caracteristicas: ListaCaracteristicaProdutoDTO[];
+  //imagens: ListaImagemProdutoDTO[];
 }

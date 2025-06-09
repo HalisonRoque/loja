@@ -54,7 +54,7 @@ export class CriaProdutoDTO {
   })
   descricao: string;
 
-  @ValidateNested()
+  /*@ValidateNested()
   @IsArray()
   @ArrayMinSize(3)
   @Type(() => CaracteristicaProdutoDTO)
@@ -64,7 +64,7 @@ export class CriaProdutoDTO {
   @IsArray()
   @ArrayMinSize(1)
   @Type(() => ImagemProdutoDTO)
-  imagens: ImagemProdutoDTO[];
+  imagens: ImagemProdutoDTO[];*/
 
   @IsString()
   @IsNotEmpty({ message: 'Categoria do produto não pode ser vazia' })
