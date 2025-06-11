@@ -13,8 +13,6 @@ import {
 import { CaracteristicaProdutoDTO, ImagemProdutoDTO } from './CriaProduto.dto';
 
 export class AtualizaProdutoDTO {
-  @IsUUID(undefined, { message: 'ID do produto inválido' })
-  id: string;
 
   @IsUUID(undefined, { message: 'ID de usuário inválido' })
   usuarioId: string;
@@ -39,19 +37,17 @@ export class AtualizaProdutoDTO {
   @IsOptional()
   descricao: string;
 
-  /*@ValidateNested()
+  @ValidateNested()
   @IsArray()
   @ArrayMinSize(3)
   @Type(() => CaracteristicaProdutoDTO)
-  @IsOptional()
   caracteristicas: CaracteristicaProdutoDTO[];
 
   @ValidateNested()
   @IsArray()
   @ArrayMinSize(1)
   @Type(() => ImagemProdutoDTO)
-  @IsOptional()
-  imagens: ImagemProdutoDTO[];*/
+  imagens: ImagemProdutoDTO[];
 
   @IsString()
   @IsNotEmpty({ message: 'Categoria do produto não pode ser vazia' })
