@@ -1,33 +1,32 @@
 import {
-    Entity,
-    Column,
-    CreateDateColumn,
-    DeleteDateColumn,
-    UpdateDateColumn,
-    PrimaryGeneratedColumn
+  Entity,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
 @Entity({ name: 'usuarios' })
 export class UsuarioEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @PrimaryGeneratedColumn('uuid')
-    id_usuario: string;
+  @Column({ name: 'nome', length: 100, nullable: false })
+  nome: string;
 
-    @Column({ name: 'nome', length: 100, nullable: false })
-    nome: string;
+  @Column({ name: 'email', length: 70, nullable: false })
+  email: string;
 
-    @Column({ name: 'email', length: 70, nullable: false })
-    email: string;
+  @Column({ name: 'senha', length: 255, nullable: false })
+  senha: string;
 
-    @Column({ name: 'senha', length: 255, nullable: false })
-    senha: string;
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: string;
 
-    @CreateDateColumn({ name: 'created_at' }) //Anotação para gerar registro de hora na monipulação dos dados dentro da tabela, seguindo o padrão do nome da anotação
-    createAt: string;
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: string;
 
-    @UpdateDateColumn({ name: 'update_at' }) //Anotação para gerar registro de hora na monipulação dos dados dentro da tabela, seguindo o padrão do nome da anotação
-    updateAt: string;
-
-    @DeleteDateColumn({ name: 'delete_at' }) //Anotação para gerar registro de hora na monipulação dos dados dentro da tabela, seguindo o padrão do nome da anotação
-    deletedAt: string;
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deletedAt: string;
 }

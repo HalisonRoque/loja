@@ -1,50 +1,48 @@
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { CriaUsuarioDTO } from "./dto/CriaUsuario.dto";
-import { ListaUsuarioDTO } from "./dto/ListaUsuario.dto";
-import { AtualizaUsuarioDTO } from "./dto/UpdateUsuario.dto";
-import { UsuarioEntity } from "./usuario.entity";
-import { Repository } from "typeorm";
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ListaUsuarioDTO } from './dto/ListaUsuario.dto';
+import { UsuarioEntity } from './usuario.entity';
+import { Repository } from 'typeorm';
+import { AtualizaUsuarioDTO } from './dto/AtualizaUsuario.dto';
+import { CriaUsuarioDTO } from './dto/CriaUsuario.dto';
 
 @Injectable()
 export class UsuarioService {
-    constructor(
-        @InjectRepository(UsuarioEntity)
-        private readonly usuarioRepository: Repository<UsuarioEntity> //no construtor injetamos os repositorio apontando para a entidade, o readonly habilita apenas leitura
-    ) { }
+  constructor(
+    @InjectRepository(UsuarioEntity)
+    private readonly usuarioRepository: Repository<UsuarioEntity>,
+  ) {}
 
-    //LISTAR USUÁRIOS
-    async listaUsuarios() {
-        const usuariosSalvos = await this.usuarioRepository.find();
-        const usuarioLista = usuariosSalvos.map(
-            (usuario) => new ListaUsuarioDTO(
-                usuario.id_usuario,
-                usuario.nome
-            )
-        );
-        return usuarioLista;
-    }
+  async criaUsuario(dadosDoUsuario: CriaUsuarioDTO) {
+    const usuarioEntity = new UsuarioEntity();
 
-    //create
-    async createUsuario(
-        body: CriaUsuarioDTO
-    ) {
-        const usuarioEntity = new UsuarioEntity();
+    usuarioEntity.email = dadosDoUsuario.email;
+    usuarioEntity.senha = dadosDoUsuario.senha;
+    usuarioEntity.nome = dadosDoUsuario.nome;
 
-        usuarioEntity.email = body.email;
-        usuarioEntity.senha = body.senha;
-        usuarioEntity.nome = body.nome;
+    return this.usuarioRepository.save(usuarioEntity);
+  }
 
-        await this.usuarioRepository.save(usuarioEntity);
-    }
+  async listUsuarios() {
+    const usuariosSalvos = await this.usuarioRepository.find();
+    const usuariosLista = usuariosSalvos.map(
+      (usuario) => new ListaUsuarioDTO(usuario.id, usuario.nome),
+    );
+    return usuariosLista;
+  }
 
-    //update
-    async updateUsuario(id: string, usuarioEntity: AtualizaUsuarioDTO) {
-        await this.usuarioRepository.update(id, usuarioEntity);
-    }
+  async buscaPorEmail(email: string) {
+    const checkEmail = await this.usuarioRepository.findOne({
+      where: { email },
+    });
+    return checkEmail;
+  }
 
-    //delete
-    async deleteUsuario(id: string) {
-        await this.usuarioRepository.delete(id);
-    }
+  async atualizaUsuario(id: string, novosDados: AtualizaUsuarioDTO) {
+    await this.usuarioRepository.update(id, novosDados);
+  }
+
+  async deletaUsuario(id: string) {
+    await this.usuarioRepository.delete(id);
+  }
 }

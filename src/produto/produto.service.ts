@@ -1,49 +1,59 @@
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { ProdutoEntity } from "./produto.entity";
-import { Repository } from "typeorm";
-import { ListaProdutoDTO } from "./dto/ListaProduto.dto";
-import { AtualizaProdutoDTO } from "./dto/AtualizaProduto.dto";
-import { CriaProdutoDTO } from "./dto/CriaProduto.dto";
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ListaProdutoDTO } from './dto/ListaProduto.dto';
+import { ProdutoEntity } from './produto.entity';
+import { Repository } from 'typeorm';
+import { AtualizaProdutoDTO } from './dto/AtualizaProduto.dto';
+import { CriaProdutoDTO } from './dto/CriaProduto.dto';
 
 @Injectable()
 export class ProdutoService {
-    constructor(
-        @InjectRepository(ProdutoEntity)
-        private readonly produtoRepository: Repository<ProdutoEntity>
-    ) { }
+  constructor(
+    @InjectRepository(ProdutoEntity)
+    private readonly produtoRepository: Repository<ProdutoEntity>,
+  ) {}
 
-    async createProduto(
-        dadosProduto: CriaProdutoDTO
-    ) {
-        const produto = new ProdutoEntity();
+  async criaProduto(dadosProduto: CriaProdutoDTO) {
+    const produtoEntity = new ProdutoEntity();
 
-        produto.nome = dadosProduto.nome;
-        produto.valor = dadosProduto.valor;
-        produto.quantidadeDisponivel = dadosProduto.quantidadeDisponivel;
-        produto.descricao = dadosProduto.descricao;
-        produto.categoria = dadosProduto.categoria;
-        produto.caracteristicas = dadosProduto.caracteristicas;
-        produto.imagens = dadosProduto.imagens;
-        
-        return this.produtoRepository.save(produto);
-    }
+    produtoEntity.nome = dadosProduto.nome;
+    produtoEntity.valor = dadosProduto.valor;
+    produtoEntity.usuarioId = dadosProduto.usuarioId;
+    produtoEntity.quantidadeDisponivel = dadosProduto.quantidadeDisponivel;
+    produtoEntity.descricao = dadosProduto.descricao;
+    produtoEntity.categoria = dadosProduto.categoria;
+    produtoEntity.caracteristicas = dadosProduto.caracteristicas;
+    produtoEntity.imagens = dadosProduto.imagens;
 
-    async listProduto() {
-        const produtosSalvos = await this.produtoRepository.find();
-        return produtosSalvos;
-    }
+    return this.produtoRepository.save(produtoEntity);
+  }
 
-    async updateProduto(
-        id: string,
-        produtoEntity: AtualizaProdutoDTO
-    ) {
-        await this.produtoRepository.update(id, produtoEntity);
-    }
+  async listProdutos() {
+    const produtosSalvos = await this.produtoRepository.find({
+      relations: {
+        imagens: true,
+        caracteristicas: true,
+      },
+    });
+    const produtosLista = produtosSalvos.map(
+      (produto) =>
+        new ListaProdutoDTO(
+          produto.id,
+          produto.nome,
+          produto.caracteristicas,
+          produto.imagens,
+        ),
+    );
+    return produtosLista;
+  }
 
-    async deleteProduto(id: string) {
-        await this.produtoRepository.delete(id);
-    }
+  async atualizaProduto(id: string, novosDados: AtualizaProdutoDTO) {
+    const entityName = await this.produtoRepository.findOneBy({ id });
+    Object.assign(entityName, novosDados);
+    return this.produtoRepository.save(entityName);
+  }
 
-
+  async deletaProduto(id: string) {
+    await this.produtoRepository.delete(id);
+  }
 }

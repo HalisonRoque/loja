@@ -1,24 +1,14 @@
 import {
   Entity,
   Column,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
-  OneToMany
-} from "typeorm";
-import { ProdutoCaracteristicaEntity } from "./produto-caracteristica.entity";
-import { ProdutoImagemEntity } from "./produto-imagem.entity";
-
-/*class CaracteristicaProduto {
-  nome: string;
-  descricao: string;
-}
-
-class ImagemProduto {
-  url: string;
-  descricao: string;
-}*/
+  PrimaryGeneratedColumn,
+  OneToMany,
+} from 'typeorm';
+import { ProdutoImagemEntity } from './produto-imagem.entity';
+import { ProdutoCaracteristicaEntity } from './produto-caracteristica.entity';
 
 @Entity({ name: 'produtos' })
 export class ProdutoEntity {
@@ -40,28 +30,29 @@ export class ProdutoEntity {
   @Column({ name: 'descricao', length: 255, nullable: false })
   descricao: string;
 
-  @Column({ name: 'categoria', length: 255, nullable: false })
+  @Column({ name: 'categoria', length: 100, nullable: false })
   categoria: string;
 
-  //OneToMany ou OneToOne são relacionamentos entre tabelas, nesse caso como many é para muitos, ou seja um produto pode ter várias caracteristicas
-  //NA TABELA REFERENCIADA FAREMOS O INVERSO, NESSE CASO ESTAMOS PASSADO UM PODRUTO PODE TER MUITAS CARACTERISTICAS, MAS NA TABELA REFERENCIADO PASSAMOS O MUITOS PARA UM OIU MANYTOONE
-  @OneToMany(() => ProdutoCaracteristicaEntity,
-    (produtocaracteristicasEntity) => produtocaracteristicasEntity.produto,
-    { cascade: true, eager: true })
-  caracteristicas: ProdutoCaracteristicaEntity[]
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: string;
 
-  @OneToMany(() => ProdutoImagemEntity,
-    (produtoImagemEntity) => produtoImagemEntity.produto,
-    { cascade: true, eager: true }) //o cascade serve para criar em cascata nas tabelas ralacioandas, o cascade apaga ou cria os relacionaamentos
-  imagens: ProdutoImagemEntity[]
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: string;
 
-  @CreateDateColumn({ name: 'created_at' }) //Anotação para gerar registro de hora na monipulação dos dados dentro da tabela, seguindo o padrão do nome da anotação
-  createAt: string;
-
-  @UpdateDateColumn({ name: 'update_at' }) //Anotação para gerar registro de hora na monipulação dos dados dentro da tabela, seguindo o padrão do nome da anotação
-  updateAt: string;
-
-  @DeleteDateColumn({ name: 'delete_at' }) //Anotação para gerar registro de hora na monipulação dos dados dentro da tabela, seguindo o padrão do nome da anotação
+  @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: string;
 
+  @OneToMany(
+    () => ProdutoImagemEntity,
+    (produtoImagemEntity) => produtoImagemEntity.produto,
+    { cascade: true, eager: true },
+  )
+  imagens: ProdutoImagemEntity[];
+
+  @OneToMany(
+    () => ProdutoCaracteristicaEntity,
+    (produtoCaracteristicaEntity) => produtoCaracteristicaEntity.produto,
+    { cascade: true, eager: true },
+  )
+  caracteristicas: ProdutoCaracteristicaEntity[];
 }

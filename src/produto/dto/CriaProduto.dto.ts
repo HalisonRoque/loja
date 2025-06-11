@@ -13,9 +13,7 @@ import {
 } from 'class-validator';
 import { ProdutoEntity } from '../produto.entity';
 
-//DTO CARACTERISTICAS
 export class CaracteristicaProdutoDTO {
-
   id: string;
 
   @IsString()
@@ -29,12 +27,10 @@ export class CaracteristicaProdutoDTO {
   produto: ProdutoEntity;
 }
 
-//DTO IMAGEM
 export class ImagemProdutoDTO {
-
   id: string;
 
-  @IsUrl(undefined, { message: 'URL para imagem inválida' })
+  @IsUrl({ message: 'URL para imagem inválida' })
   url: string;
 
   @IsString()
@@ -44,8 +40,9 @@ export class ImagemProdutoDTO {
   produto: ProdutoEntity;
 }
 
-//DTO PRODUTO
 export class CriaProdutoDTO {
+  @IsUUID(undefined, { message: 'ID de usuário inválido' })
+  usuarioId: string;
 
   @IsString()
   @IsNotEmpty({ message: 'Nome do produto não pode ser vazio' })
@@ -68,7 +65,7 @@ export class CriaProdutoDTO {
 
   @ValidateNested()
   @IsArray()
-  @ArrayMinSize(3)
+  @ArrayMinSize(1)
   @Type(() => CaracteristicaProdutoDTO)
   caracteristicas: CaracteristicaProdutoDTO[];
 
