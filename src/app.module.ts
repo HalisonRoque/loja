@@ -6,6 +6,8 @@ import { ProdutoModule } from './produto/produto.module';
 import { UsuarioModule } from './usuario/usuario.module';
 import { PostgresConfigService } from './config/postgres.config.service';
 import { PedidoModule } from './pedido/pedido.module';
+import { FiltroDeExcecaoHttp } from './filtros/filtro-de-excecao-http';
+import { APP_FILTER } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -20,5 +22,11 @@ import { PedidoModule } from './pedido/pedido.module';
     }),
     PedidoModule,
   ],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: FiltroDeExcecaoHttp
+    }
+  ]
 })
 export class AppModule {}
