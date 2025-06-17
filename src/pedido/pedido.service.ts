@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PedidoEntity } from './pedido.entity';
 import { In, Repository } from 'typeorm';
@@ -31,6 +31,26 @@ export class PedidoService {
     return usuario;
   }
 
+  private async trataDadosPedido(
+    dadosDoPedido: CriaPedidoDTO,
+    produtosRelacionados: ProdutoEntity[],
+  ) {
+    dadosDoPedido.itensPedido.forEach((itemPedido) => {
+      const produtoRelacionado = produtosRelacionados.find(
+        (produto) => produto.id === itemPedido.produtoId);
+
+      if (produtoRelacionado === undefined) {
+        throw new NotFoundException(`O produto com id ${itemPedido} não foi encontrado!`)
+      }
+
+      if (itemPedido.quantidade > produtoRelacionado.quantidadeDisponivel) {
+        throw new BadRequestException(`A quantidade solicitada (${itemPedido.quantidade}) é maior 
+          do que a disponível (${produtoRelacionado.quantidadeDisponivel}) para o produto ${produtoRelacionado.nome}.`);
+      }
+    })
+    
+  }
+
   async cadastraPedido(
     usuarioId: string,
     dadosDoPedido: CriaPedidoDTO
@@ -44,29 +64,25 @@ export class PedidoService {
     )
 
     //BUSCA OS PRODUTOS RELACIONADOS
-    const produtosRelacionados = await this.produtoRepository.findBy({ id: In(produtosIds) })
-
-    //INICIA O OBJETO PEDIDO ENTITY PARA FAZER AS MODIFICAÇÕES FUTURAS
+    const produtosRelacionados = await this.produtoRepository.findBy(
+      { id: In(produtosIds) })
+    
     const pedidoEntity = new PedidoEntity();
 
-    //FAZ AS DEVIDAS ADIÇÕES AO OBJETO PEDIDO PARA SER SALVO 
-    pedidoEntity.status = StatusPedido.EM_PROCESSAMENTO;
-    pedidoEntity.usuario = usuario;
+    //INICIA O OBJETO PEDIDO ENTITY PARA FAZER AS MODIFICAÇÕES FUTURAS
+    await this.trataDadosPedido(dadosDoPedido, produtosRelacionados);
 
     //MAPEIA OS ITENS PEDIDOS PARA SALVAR EM PRODUTOENTITY
     //AQUI FAZEMOS BUSCAS PARA BUSCAR A QUANTIDADE, PRODUTO, VALOR E RETORNA UM ARRAY COM UM OBJETO PARA ITEMPEDIDOENTITY
     const itensPedidoEntidades = dadosDoPedido.itensPedido.map((itemPedido) => {
-      const produtoRelacionado = produtosRelacionados.find((produto) => produto.id === itemPedido.produtoId)
-      
-      if (produtoRelacionado === undefined) {
-        throw new NotFoundException(`O produto com id ${itemPedido} não foi encontrado!`)
-      }
+      const produtoRelacionado = produtosRelacionados.find(
+        (produto) => produto.id === itemPedido.produtoId)
 
       const itemPedidoEntity = new ItemPedidoEntity();
 
-      itemPedidoEntity.produto = produtoRelacionado;
+      itemPedidoEntity.produto = produtoRelacionado!;
 
-      itemPedidoEntity.precoVenda = produtoRelacionado.valor;
+      itemPedidoEntity.precoVenda = produtoRelacionado!.valor;
       itemPedidoEntity.quantidade = itemPedido.quantidade
 
       itemPedidoEntity.produto.quantidadeDisponivel -= itemPedido.quantidade; //FAZ A SUBTRÇÃO DE ESTOQUE NO PRODUTO
