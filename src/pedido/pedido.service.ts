@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import { UpdatePedidoDto } from './dto/update-pedido.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PedidoEntity } from './pedido.entity';
 import { In, Repository } from 'typeorm';
@@ -8,6 +7,7 @@ import { StatusPedido } from './enum/statuspedido.enum';
 import { CriaPedidoDTO } from './dto/CriaPedido.dto';
 import { ItemPedidoEntity } from './itempedido.entity';
 import { ProdutoEntity } from 'src/produto/produto.entity';
+import { AtualizaPedidoDTO } from './dto/AtualizaPedido.dto';
 
 @Injectable()
 export class PedidoService {
@@ -20,13 +20,23 @@ export class PedidoService {
     private readonly produtoRepository: Repository<ProdutoEntity>,
   ) { }
 
+  private async buscaUsuarioId(id) {
+    const usuario = await this.usuarioRepository
+      .findOneBy({ id: id })
+
+    if (usuario === null) {
+      throw new NotFoundException('O usuário não foi encontrado!');
+    }
+
+    return usuario;
+  }
+
   async cadastraPedido(
     usuarioId: string,
     dadosDoPedido: CriaPedidoDTO
   ) {
     //BUSCA USUARIO
-    const usuario = await this.usuarioRepository
-      .findOneBy({ id: usuarioId })
+    const usuario = await this.buscaUsuarioId(usuarioId)
 
     //MAPEIA E RETORNA OS IDs DE PRODUTOS
     const produtosIds = dadosDoPedido.itensPedido.map(
@@ -47,6 +57,11 @@ export class PedidoService {
     //AQUI FAZEMOS BUSCAS PARA BUSCAR A QUANTIDADE, PRODUTO, VALOR E RETORNA UM ARRAY COM UM OBJETO PARA ITEMPEDIDOENTITY
     const itensPedidoEntidades = dadosDoPedido.itensPedido.map((itemPedido) => {
       const produtoRelacionado = produtosRelacionados.find((produto) => produto.id === itemPedido.produtoId)
+      
+      if (produtoRelacionado === undefined) {
+        throw new NotFoundException(`O produto com id ${itemPedido} não foi encontrado!`)
+      }
+
       const itemPedidoEntity = new ItemPedidoEntity();
 
       itemPedidoEntity.produto = produtoRelacionado;
@@ -83,5 +98,20 @@ export class PedidoService {
           usuario: true,
         },
       });
+  }
+
+  async atualizaPedido(
+    id: string,
+    dto: AtualizaPedidoDTO
+  ) {
+    const pedido = await this.pedidoRepository.findOneBy({ id });
+
+    if (pedido === null) {
+      throw new NotFoundException('O produto não foi encontrado!');
+    }
+
+    Object.assign(pedido, dto)
+
+    return this.pedidoRepository.save(pedido)
   }
 }
